@@ -1,6 +1,5 @@
 
-public class MiniMax implements Player{
-	
+public class AlphaBeta implements Player{
 	int id;
 	int cols;
 	/**
@@ -9,7 +8,7 @@ public class MiniMax implements Player{
      * @return A name for this player
      */
     public String name() {
-    	return "Mini";
+    	return "AyBee";
     };
 
   
@@ -46,6 +45,8 @@ public class MiniMax implements Player{
     	int maxDepth = 1;
     	int startValue;
     	int currentValue;
+    	int alpha = -1000;
+    	int beta = 1000;
     	
     	
     	while(!arb.isTimeUp() && maxDepth <= board.numEmptyCells()) {
@@ -56,7 +57,7 @@ public class MiniMax implements Player{
     		for(int i = 0; i <=6; i++) {
             	if(board.isValidMove(i) == true) {
             		board.move(i, id);
-            		currentValue = minimax(board, maxDepth-1, false, arb);
+            		currentValue = minimax(board, maxDepth-1, false, arb, alpha, beta);
             		board.unmove(i, id);
             		if(currentValue > startValue){
             			move = i;
@@ -71,7 +72,7 @@ public class MiniMax implements Player{
     	}
     }
     
-    public int minimax(Connect4Board board, int depth, boolean isMaximizing, Arbitrator arb) {
+    public int minimax(Connect4Board board, int depth, boolean isMaximizing, Arbitrator arb, int alpha, int beta) {
     	int value;
     	int temp;
     	if(depth == 0 || board.isFull() || arb.isTimeUp()) {
@@ -84,11 +85,17 @@ public class MiniMax implements Player{
     			if (board.isValidMove(i) == true)
     			{
     			board.move(i, id);
-    			temp = minimax(board, depth-1, false, arb);
+    			temp = minimax(board, depth-1, false, arb, alpha, beta);
     			if(temp > value) {
     				value = temp;
     			}
     			board.unmove(i, id);
+    			if(value > alpha) {
+    				alpha = value;
+    			}
+    			if(alpha >= beta) {
+    				break;
+    			}
     		}
     		}
     		return value;
@@ -99,11 +106,17 @@ public class MiniMax implements Player{
     			if (board.isValidMove(i) == true)
     			{
     			board.move(i, 3 - this.id);
-    			temp = minimax(board, depth-1, true, arb);
+    			temp = minimax(board, depth-1, true, arb, alpha, beta);
     			if(temp < value) {
     				value = temp;
     			}
     			board.unmove(i, 3-this.id);
+    			if(value < beta) {
+    				beta = value;
+    			}
+    			if(alpha >= beta) {
+    				break;
+    			}
     		}
     		}
     		return value;
